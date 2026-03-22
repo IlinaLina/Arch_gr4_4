@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Phonebook</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        label .required {
+            color: #e74c3c;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        input.invalid {
+            border-color: #e74c3c;
+            background-color: #fff5f5;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-hint {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .form-hint.error {
+            color: #e74c3c;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-submit, .btn-cancel {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-submit {
+            background: #27ae60;
+            color: white;
+            flex: 1;
+        }
+        
+        .btn-submit:hover {
+            background: #219a52;
+        }
+        
+        .btn-cancel {
+            background: #95a5a6;
+            color: white;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .btn-cancel:hover {
+            background: #7f8c8d;
+        }
+        
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        
+        .flash {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .flash.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .flash.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ title }}</h1>
+        </div>
+        
+        <div class="content">
+            <div class="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
+            
+            <form method="POST" id="contactForm">
+                <div class="form-group">
+                    <label for="last_name">Last Name <span class="required">*</span></label>
+                    <input type="text" id="last_name" name="last_name" required 
+                           value="{{ contact[1] if contact else last_name if last_name else '' }}">
+                    <div class="form-hint">Minimum 2 letters, only letters and hyphens allowed</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="first_name">First Name <span class="required">*</span></label>
+                    <input type="text" id="first_name" name="first_name" required 
+                           value="{{ contact[2] if contact else first_name if first_name else '' }}">
+                    <div class="form-hint">Minimum 2 letters, only letters and hyphens allowed</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="patronymic">Patronymic</label>
+                    <input type="text" id="patronymic" name="patronymic"
+                           value="{{ contact[3] if contact else patronymic if patronymic else '' }}">
+                    <div class="form-hint">Optional</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone_number">Phone Number <span class="required">*</span></label>
+                    <input type="tel" id="phone_number" name="phone_number" required 
+                           value="{{ contact[4] if contact else phone_number if phone_number else '' }}"
+                           placeholder="+7 999 123 45 67 or 8 999 123 45 67">
+                    <div class="form-hint">Must start with +7 or 8, exactly 11 digits. Format: +7-XXX-XXX-XX-XX</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="note">Note</label>
+                    <textarea id="note" name="note">{{ contact[5] if contact else note if note else '' }}</textarea>
+                    <div class="form-hint">Optional</div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Save</button>
+                    <a href="/" class="btn-cancel">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            let phoneInput = document.getElementById('phone_number');
+            let phone = phoneInput.value.trim();
+            
+            let cleaned = phone.replace(/[\s\-\(\)]/g, '');
+            
+            if (!cleaned.startsWith('+7') && !cleaned.startsWith('8')) {
+                e.preventDefault();
+                alert('Phone number must start with +7 or 8');
+                phoneInput.classList.add('invalid');
+                return false;
+            }
+            
+            let digits = cleaned.replace(/\D/g, '');
+            
+            if (digits.length !== 11) {
+                e.preventDefault();
+                alert('Phone number must contain exactly 11 digits (found ' + digits.length + ')');
+                phoneInput.classList.add('invalid');
+                return false;
+            }
+            
+            phoneInput.classList.remove('invalid');
+        });
+        
+        document.getElementById('phone_number').addEventListener('input', function() {
+            this.classList.remove('invalid');
+        });
+    </script>
+</body>
+</html>
