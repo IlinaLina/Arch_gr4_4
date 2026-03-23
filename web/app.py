@@ -4,10 +4,9 @@ import re
 import time
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-change-this'
+app.secret_key = '123'
 
 def get_db_connection():
-    """Get PostgreSQL database connection"""
     return psycopg2.connect(
         host='postgres',
         database='phonebook',
@@ -17,14 +16,6 @@ def get_db_connection():
 
 
 def validate_and_format_phone(phone):
-    """
-    Validate and format phone number.
-    Requirements:
-    - Must start with +7 or 8
-    - Total digits (including +7 or 8) must be 11
-    - Only digits and + allowed
-    - Format result as: +7-xxx-xxx-xx-xx
-    """
     cleaned = re.sub(r'[\s\-\(\)]', '', phone.strip())
     
     if not (cleaned.startswith('+7') or cleaned.startswith('8')):
@@ -44,7 +35,6 @@ def validate_and_format_phone(phone):
 
 
 def validate_name(name):
-    """Validate first name or last name (minimum 2 letters, only letters and hyphens)"""
     if not name or len(name.strip()) < 2:
         return False
     cleaned = name.strip().replace('-', '')
@@ -53,7 +43,6 @@ def validate_name(name):
 
 @app.route('/')
 def index():
-    """Main page - list all contacts"""
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -68,7 +57,6 @@ def index():
 
 @app.route('/add', methods=['GET', 'POST'])
 def add_contact():
-    """Add new contact"""
     if request.method == 'POST':
         last_name = request.form.get('last_name', '').strip()
         first_name = request.form.get('first_name', '').strip()
@@ -124,7 +112,6 @@ def add_contact():
 
 @app.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit_contact(id):
-    """Edit existing contact"""
     conn = get_db_connection()
     cur = conn.cursor()
     
@@ -188,7 +175,6 @@ def edit_contact(id):
 
 @app.route('/delete/<int:id>')
 def delete_contact(id):
-    """Delete contact"""
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute('DELETE FROM contacts WHERE id = %s', (id,))
