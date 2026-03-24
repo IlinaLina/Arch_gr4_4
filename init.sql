@@ -20,6 +20,3 @@ VALUES
     ('Kuznetsova', 'Elena', 'Aleksandrovna', '+7-903-777-88-99', 'Work, accounting'),
     ('Mikhailov', 'Andrey', 'Vladimirovich', '+7-925-444-55-66', 'Client, important')
 ON CONFLICT (phone_number) DO NOTHING;
-
-SELECT 'Contacts table created successfully!' AS status;
-SELECT COUNT(*) AS total_contacts FROM contacts;
