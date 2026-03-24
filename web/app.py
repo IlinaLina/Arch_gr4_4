@@ -32,7 +32,7 @@ def validate_and_format_phone(phone):
 
 
 def validate_name(name):
-    if not name or len(name.strip()) < 2 or len(name.strip()) > 200:
+    if not name or len(name.strip()) < 2 or len(name.strip()) > 100:
         return False
     cleaned = name.strip().replace('-', '')
     return cleaned.isalpha()
