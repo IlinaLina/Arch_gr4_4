@@ -26,10 +26,7 @@ def validate_and_format_phone(phone):
     if len(digits) != 11:
         return None, f"Phone number must contain exactly 11 digits (found {len(digits)})"
     
-    if cleaned.startswith('+7'):
-        formatted = f"+7-{digits[1:4]}-{digits[4:7]}-{digits[7:9]}-{digits[9:11]}"
-    else:
-        formatted = f"+7-{digits[1:4]}-{digits[4:7]}-{digits[7:9]}-{digits[9:11]}"
+    formatted = f"+7-{digits[1:4]}-{digits[4:7]}-{digits[7:9]}-{digits[9:11]}"
     
     return formatted, None
 
